@@ -1,13 +1,18 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_project/cubit/app_cubit.dart';
 import 'package:flutter_project/cubit/app_states.dart';
+import 'package:flutter_project/firebase_options.dart';
 import 'package:flutter_project/layout/home_layout.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
-  // await Firebase.initializeApp(
-  //   options: DefaultFirebaseOptions.currentPlatform,
-  // );
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  await Hive.initFlutter();
+  await Hive.openBox('User_Box');
   runApp(const MyApp());
 }
 
@@ -43,6 +48,7 @@ class MyApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
               useMaterial3: true,
             ),
+            debugShowCheckedModeBanner: false,
             home: HomeLayout(cubit: cubit),
           );
         },
