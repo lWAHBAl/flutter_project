@@ -19,7 +19,6 @@ class _MyChastsState extends State<MyChasts> {
   TextEditingController messageController = TextEditingController();
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     final AppCubit cubb = AppCubit.get(context);
     cubb.getMyChats(userId: "22010237");

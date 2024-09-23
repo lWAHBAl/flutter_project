@@ -26,8 +26,6 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController chatController = TextEditingController();
 
-  final String userId = "22010237";
-
   String formatDate(String dateTimeString) {
     DateTime dateTime = DateTime.parse(dateTimeString);
     return DateFormat('yyyy-MM-dd', 'en').format(dateTime);
@@ -46,7 +44,7 @@ class _ChatScreenState extends State<ChatScreen> {
     initializeDateFormatting('en', null).then((_) {
       // Your date formatting code will work fine now.
     });
-    widget.cubb.getChat(userId: userId, chatId: widget.chatId);
+    widget.cubb.getChat(userId: widget.cubb.userId, chatId: widget.chatId);
   }
 
   @override
@@ -80,6 +78,16 @@ class _ChatScreenState extends State<ChatScreen> {
                         const Text(
                           "My chat",
                         ),
+                        const Spacer(),
+                        TextButton(
+                            onPressed: () {
+                              setState(() {
+                                widget.cubb
+                                    .changeUserId(widget.cubb.isMe, context);
+                                widget.cubb.isMe = !(widget.cubb.isMe);
+                              });
+                            },
+                            child: const Text("Swap"))
                       ],
                     ),
                   ),
@@ -107,7 +115,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               ),
                             ),
                             ...messages.map((message) {
-                              return message.id == userId
+                              return message.id == "22010237"
                                   ? _buildMyMessage(message, context, false)
                                   : _buildOtherMessage(message, context, false);
                             }),
@@ -124,7 +132,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           topRight: Radius.circular(24.0),
                         ),
                       ),
-                      child: bottomBar(widget.cubb, userId))
+                      child: bottomBar(widget.cubb, widget.cubb.userId))
                 ],
               ),
             ),

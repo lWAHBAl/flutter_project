@@ -21,9 +21,18 @@ class AppCubit extends Cubit<Appstates> {
   List<MessageModel> messages = [];
   List<ChatModel> chats = [];
   int selectedIndex = 0;
+  bool isMe = false;
+  String userId = "22010237";
   void changeScreen(index) {
     selectedIndex = index;
     emit(ChangeScreenState());
+  }
+
+  void changeUserId(bool isMe, context) {
+    userId = isMe ? "22010237" : "22010289";
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text("user changed $userId")));
+    emit(ChangeUserIdState());
   }
 
 ///////////////
