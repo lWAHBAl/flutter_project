@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_project/models/chat_model.dart';
+import 'package:flutter_project/models/message_model.dart';
 import 'package:flutter_project/screens/chats/my_chats/my_chasts.dart';
 import 'package:flutter_project/screens/stories/stories_screen.dart';
 import 'package:flutter_project/screens/user/user_screen/user_screen.dart';
@@ -16,27 +17,9 @@ class AppCubit extends Cubit<Appstates> {
   AppCubit() : super(AppInitState());
   static AppCubit get(BuildContext context) => BlocProvider.of(context);
 
-  final pages = [MyChasts(), const UserScreen(), const StoriesScreen()];
-  List<ChatModel> messages = [
-    ChatModel(
-        message: "Welcome to chat App",
-        time: "2024-09-15 00:38:07.856",
-        id: "22010237",
-        imagaeUrl: "",
-        type: false),
-    ChatModel(
-        message: "Welcome to chat App 2",
-        id: "22010237",
-        time: "2024-09-15 00:40:07.856",
-        imagaeUrl: "",
-        type: false),
-    ChatModel(
-        message: "Welcome to chat App 3",
-        id: "22010237",
-        time: "2024-09-21 00:38:07.856",
-        imagaeUrl: "",
-        type: false)
-  ];
+  final pages = [const MyChasts(), const UserScreen(), const StoriesScreen()];
+  List<MessageModel> messages = [];
+  List<ChatModel> chats = [];
   int selectedIndex = 0;
   void changeScreen(index) {
     selectedIndex = index;
@@ -83,8 +66,6 @@ class AppCubit extends Cubit<Appstates> {
       String? imagaeUrl}) {
     emit(AddMessageLoadingState());
     FirebaseFirestore.instance
-        .collection('Users')
-        .doc(userId)
         .collection('Chats')
         .doc(chatId)
         .collection("Messages")
@@ -113,12 +94,34 @@ class AppCubit extends Cubit<Appstates> {
     emit(ChangeSendIconstate());
   }
 
+  /////////////////////
+  void createChat(
+      {required String userId,
+      required String receiverId,
+      required String message}) {
+    emit(CreateChatLoadingState());
+    String id = FirebaseFirestore.instance.collection('Chats').doc().id;
+    FirebaseFirestore.instance
+        .collection('Chats')
+        .doc(id)
+        .set(ChatModel(
+                chatId: id,
+                usersIds: [userId, receiverId],
+                lastMessage: message)
+            .toMap())
+        .then((onValue) {
+      addMessage(userId: userId, chatId: id, type: false, message: message);
+      emit(CreateChatSuccessState());
+    }).catchError((onError) {
+      emit(CreateChatFailState());
+    });
+  }
+
+//////////////////////////////////
   void getChat({required String userId, required String chatId}) {
-    emit(GetChatsLoadingState());
+    emit(GetChatMessagesLoadingState());
     messages = [];
     FirebaseFirestore.instance
-        .collection('Users')
-        .doc(userId)
         .collection('Chats')
         .doc(chatId)
         .collection("Messages")
@@ -126,11 +129,27 @@ class AppCubit extends Cubit<Appstates> {
         .snapshots()
         .listen((snapshot) {
       messages = snapshot.docs
-          .map((doc) => ChatModel.fromJson(doc.data()))
+          .map((doc) => MessageModel.fromJson(doc.data()))
           .toList()
           .reversed
           .toList();
+      emit(GetChatMessagesSuccessState());
+    });
+  }
+
+  ////////////////////////
+  void getMyChats({required String userId}) {
+    emit(GetChatsLoadingState());
+    chats = [];
+    FirebaseFirestore.instance
+        .collection('Chats')
+        .where('usersIds', arrayContains: userId)
+        .snapshots()
+        .listen((snapshot) {
+      chats =
+          snapshot.docs.map((doc) => ChatModel.fromJson(doc.data())).toList();
       emit(GetChatsSuccessState());
     });
   }
+  /////////////////////////////
 }

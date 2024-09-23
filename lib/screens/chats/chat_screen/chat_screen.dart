@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_project/Components/components.dart';
 import 'package:flutter_project/cubit/app_cubit.dart';
 import 'package:flutter_project/cubit/app_states.dart';
-import 'package:flutter_project/models/chat_model.dart';
+import 'package:flutter_project/models/message_model.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
@@ -69,7 +69,6 @@ class _ChatScreenState extends State<ChatScreen> {
                       children: [
                         IconButton(
                           onPressed: () {
-                            debugPrint(DateTime.now().toString());
                             Navigator.pop(context);
                           },
                           icon: const Icon(
@@ -93,7 +92,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         final dateGroup =
                             _groupMessagesByDate(widget.cubb.messages)[index];
                         final messages =
-                            dateGroup['messages'] as List<ChatModel>;
+                            dateGroup['messages'] as List<MessageModel>;
                         final date = dateGroup['date'] as String;
 
                         return Column(
@@ -185,8 +184,8 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  List<Map<String, dynamic>> _groupMessagesByDate(List<ChatModel> messages) {
-    Map<String, List<ChatModel>> groupedMessages = {};
+  List<Map<String, dynamic>> _groupMessagesByDate(List<MessageModel> messages) {
+    Map<String, List<MessageModel>> groupedMessages = {};
 
     for (var message in messages) {
       String formattedDate = formatDate(message.time);
@@ -216,7 +215,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildOtherMessage(
-    ChatModel message,
+    MessageModel message,
     context,
     bool isDarkMode,
   ) {
@@ -289,7 +288,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildMyMessage(
-    ChatModel message,
+    MessageModel message,
     context,
     bool isDarkMode,
   ) {

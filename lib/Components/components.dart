@@ -187,3 +187,106 @@ class FullScreenImageViewer extends StatelessWidget {
     );
   }
 }
+
+class DialogBox extends StatelessWidget {
+  final TextEditingController controller1;
+  final TextEditingController controller2;
+
+  VoidCallback onSave;
+  VoidCallback onCancel;
+
+  DialogBox(
+      {super.key,
+      required this.controller1,
+      required this.controller2,
+      required this.onSave,
+      required this.onCancel});
+
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      content: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextFormField(
+              controller: controller1,
+              style: const TextStyle(color: Colors.black),
+              decoration: InputDecoration(
+                  labelText: 'Add a new User',
+                  labelStyle: const TextStyle(color: Colors.black),
+                  enabledBorder: _border,
+                  focusedBorder: _border,
+                  border: _border),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter User Id';
+                } else {
+                  return null;
+                }
+              },
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            TextFormField(
+              controller: controller2,
+              style: const TextStyle(color: Colors.black),
+              decoration: InputDecoration(
+                  labelText: 'Write your message',
+                  labelStyle: const TextStyle(color: Colors.black),
+                  enabledBorder: _border,
+                  focusedBorder: _border,
+                  border: _border),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a message';
+                } else {
+                  return null;
+                }
+              },
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                onPressed: onCancel,
+                child: const Text(
+                  'Cancel',
+                ),
+              ),
+            ),
+            const SizedBox(
+              width: 16,
+            ),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState?.validate() == true) {
+                    onSave();
+                  }
+                },
+                child: const Text('Save'),
+              ),
+            )
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+final _border = OutlineInputBorder(
+    borderRadius: BorderRadius.circular(12.0),
+    borderSide:
+        const BorderSide(color: Colors.black, width: 1) // Rounded corners
+    );

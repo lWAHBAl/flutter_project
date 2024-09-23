@@ -1,34 +1,21 @@
 class ChatModel {
-  String? message;
-  final String id;
-  final String time;
-  String? imagaeUrl;
-  bool type;
-  ChatModel({
-    required this.message,
-    required this.id,
-    required this.time,
-    required this.imagaeUrl,
-    required this.type,
-  });
+  final String chatId;
+  final List<dynamic> usersIds;
+  final String lastMessage;
+
+  ChatModel(
+      {required this.chatId,
+      required this.usersIds,
+      required this.lastMessage});
 
   factory ChatModel.fromJson(Map<String, dynamic> json) {
     return ChatModel(
-      message: json['message'],
-      id: json['id'],
-      time: json['time'],
-      imagaeUrl: json['imagaeUrl'],
-      type: json['type'],
-    );
+        chatId: json['chatId'],
+        usersIds: json['usersIds'],
+        lastMessage: json['lastMessage']);
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'message': message,
-      'id': id,
-      'time': time,
-      'imagaeUrl': imagaeUrl,
-      'type': type,
-    };
+    return {'chatId': chatId, 'usersIds': usersIds, 'lastMessage': lastMessage};
   }
 }

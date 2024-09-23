@@ -19,3 +19,15 @@ class ChangeSendIconstate extends Appstates {}
 class GetChatsSuccessState extends Appstates {}
 
 class GetChatsLoadingState extends Appstates {}
+
+class ChangeUserIdState extends Appstates {}
+
+class CreateChatFailState extends Appstates {}
+
+class CreateChatSuccessState extends Appstates {}
+
+class CreateChatLoadingState extends Appstates {}
+
+class GetChatMessagesLoadingState extends Appstates {}
+
+class GetChatMessagesSuccessState extends Appstates {}
