@@ -31,3 +31,7 @@ class CreateChatLoadingState extends Appstates {}
 class GetChatMessagesLoadingState extends Appstates {}
 
 class GetChatMessagesSuccessState extends Appstates {}
+
+class DeleteChatSuccessState extends Appstates {}
+
+class TempDeleteState extends Appstates {}

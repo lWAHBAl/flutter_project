@@ -283,10 +283,50 @@ class DialogBox extends StatelessWidget {
       ],
     );
   }
+
+  final _border = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12.0),
+      borderSide:
+          const BorderSide(color: Colors.black, width: 1) // Rounded corners
+      );
 }
 
-final _border = OutlineInputBorder(
-    borderRadius: BorderRadius.circular(12.0),
-    borderSide:
-        const BorderSide(color: Colors.black, width: 1) // Rounded corners
+class LoadingAlert {
+  static void showLoadingDialogUntilState({
+    required BuildContext context,
+    required AppCubit cubit,
+    required Appstates targetState,
+  }) {
+    // Show the loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible:
+          false, // Prevent outside tap from dismissing the dialog
+      builder: (context) => PopScope(
+        canPop:
+            false, // This prevents the dialog from being dismissed via the back button
+        child: BlocConsumer<AppCubit, Appstates>(
+          listener: (context, state) {
+            // Close the loading dialog when the target state is reached
+            if (state == targetState) {
+              Navigator.of(context).pop(); // Dismiss the dialog
+            }
+          },
+          builder: (context, state) => const AlertDialog(
+            content: Padding(
+              padding: EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  CircularProgressIndicator(),
+                  SizedBox(height: 20),
+                  Text("Please Wait..."),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
+  }
+}

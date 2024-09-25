@@ -160,5 +160,22 @@ class AppCubit extends Cubit<Appstates> {
       emit(GetChatsSuccessState());
     });
   }
+
   /////////////////////////////
+  bool cancleDeletion = false;
+  void deleteChat({required String chatId}) {
+    FirebaseFirestore.instance
+        .collection('Chats')
+        .doc(chatId)
+        .delete()
+        .then((onValue) {
+      emit(DeleteChatSuccessState());
+    });
+  }
+
+  ////////////////////
+  void tempDelete(index) {
+    messages.removeAt(index);
+    emit(TempDeleteState());
+  }
 }

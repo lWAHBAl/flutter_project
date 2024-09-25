@@ -8,6 +8,9 @@ import 'package:flutter_project/layout/home_layout.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
+  WidgetsFlutterBinding
+      .ensureInitialized(); // Ensure Flutter bindings are initialized
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

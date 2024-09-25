@@ -93,7 +93,7 @@ class _HomeLayoutState extends State<HomeLayout> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   child: widget.cubit.pages[widget.cubit.selectedIndex],
                 ),
               ),
