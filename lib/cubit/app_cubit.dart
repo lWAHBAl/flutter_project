@@ -17,17 +17,19 @@ class AppCubit extends Cubit<Appstates> {
   AppCubit() : super(AppInitState());
   static AppCubit get(BuildContext context) => BlocProvider.of(context);
 
+  //////////////
+  ///Change Screen (Navigation Bar)
   final pages = [const MyChasts(), const UserScreen(), const StoriesScreen()];
-  List<MessageModel> messages = [];
-  List<ChatModel> chats = [];
   int selectedIndex = 0;
-  bool isMe = false;
-  String userId = "22010237";
   void changeScreen(index) {
     selectedIndex = index;
     emit(ChangeScreenState());
   }
 
+  /////////////////////////
+  ///used in the chat screen to change the user to test chatting in one screen
+  bool isMe = false;
+  String userId = "22010237";
   void changeUserId(bool isMe, context) {
     userId = isMe ? "22010237" : "22010289";
     ScaffoldMessenger.of(context)
@@ -36,6 +38,7 @@ class AppCubit extends Cubit<Appstates> {
   }
 
 ///////////////
+  /// image picker in chat screen
   File? img;
   void pickChatImage(ImageSource source) async {
     final picker = ImagePicker();
@@ -50,11 +53,12 @@ class AppCubit extends Cubit<Appstates> {
   }
 
   ////////////
+  ///Upload the image into fire base
   String chatImageUrl = "";
   Future<String> uploadChatimage({
     required File? file,
   }) async {
-    emit(UploadChatImageState());
+    emit(UploadChatImageLoadingState());
     String url = 'ChatImages/${Uri.file(file!.path)}';
     Reference ref = FirebaseStorage.instance
         .ref()
@@ -66,7 +70,15 @@ class AppCubit extends Cubit<Appstates> {
     return url;
   }
 
+  ////////////////////
+  ///set image to null
+  void swap() {
+    img = null;
+    emit(SwapState());
+  }
+
   /////////////////////////
+  /// send message method
   Future<void> addMessage(
       {required String userId,
       required chatId,
@@ -88,8 +100,6 @@ class AppCubit extends Cubit<Appstates> {
     }).then((value) {
       img = null;
       emit(AddMessageSuccessState());
-
-      // getChat(model);
     }).catchError((error) {
       debugPrint(error);
     });
@@ -97,6 +107,7 @@ class AppCubit extends Cubit<Appstates> {
   }
 
 ////////////////////////
+  /// changing icon in the chat
   bool isTyping = false;
   void changeSendIcon(value) {
     isTyping = value.isNotEmpty;
@@ -104,6 +115,7 @@ class AppCubit extends Cubit<Appstates> {
   }
 
   /////////////////////
+  /// create chat method for the first time
   void createChat(
       {required String userId,
       required String receiverId,
@@ -127,6 +139,8 @@ class AppCubit extends Cubit<Appstates> {
   }
 
 //////////////////////////////////
+  /// get all chat messages
+  List<MessageModel> messages = [];
   void getChat({required String userId, required String chatId}) {
     emit(GetChatMessagesLoadingState());
     messages = [];
@@ -147,6 +161,8 @@ class AppCubit extends Cubit<Appstates> {
   }
 
   ////////////////////////
+  ///get all chats
+  List<ChatModel> chats = [];
   void getMyChats({required String userId}) {
     emit(GetChatsLoadingState());
     chats = [];
@@ -162,6 +178,7 @@ class AppCubit extends Cubit<Appstates> {
   }
 
   /////////////////////////////
+  /// undo method
   bool cancleDeletion = false;
   void deleteChat({required String chatId}) {
     FirebaseFirestore.instance
@@ -174,6 +191,7 @@ class AppCubit extends Cubit<Appstates> {
   }
 
   ////////////////////
+  ///undo method
   void tempDelete(index) {
     messages.removeAt(index);
     emit(TempDeleteState());

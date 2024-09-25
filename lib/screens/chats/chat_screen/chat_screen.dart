@@ -7,6 +7,7 @@ import 'package:flutter_project/Components/components.dart';
 import 'package:flutter_project/cubit/app_cubit.dart';
 import 'package:flutter_project/cubit/app_states.dart';
 import 'package:flutter_project/models/message_model.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
@@ -132,7 +133,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           topRight: Radius.circular(24.0),
                         ),
                       ),
-                      child: bottomBar(widget.cubb, widget.cubb.userId))
+                      child: bottomBar(widget.cubb, widget.cubb.userId, state))
                 ],
               ),
             ),
@@ -142,51 +143,91 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget bottomBar(AppCubit cubb, userId) {
+  Widget bottomBar(AppCubit cubb, userId, state) {
     return Row(
       children: [
         Expanded(
-          child: DefaultTextField(
-            height: 8,
-            type: TextInputType.text,
-            onChanged: (value) {},
-            label: "Enter a message",
-            controller: chatController,
-            errStr: "please Enter a message",
-            maxLines: 2,
-          ),
+          child: state is PickImageState
+              ? Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          FullScreenImageViewer.showFullImage2(
+                              context, cubb.img);
+                        },
+                        child: SizedBox(
+                          width: 55,
+                          height: 55,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Image.file(
+                              cubb.img!,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12.0),
+                      TextButton(
+                        onPressed: () {
+                          cubb.swap();
+                        },
+                        child: const Text(
+                          "cancle",
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              : DefaultTextField(
+                  height: 8,
+                  type: TextInputType.text,
+                  onChanged: (value) {},
+                  label: "Enter a message",
+                  controller: chatController,
+                  errStr: "please Enter a message",
+                  maxLines: 2,
+                ),
         ),
         const SizedBox(width: 8),
-        IconButton(
-          icon: const Icon(
-            Icons.send_rounded,
-            size: 32,
-          ),
-          onPressed: () async {
-            if (chatController.text.isNotEmpty || cubb.img != null) {
-              String imageUrl = "";
-              if (cubb.img != null) {
-                imageUrl = await cubb.uploadChatimage(file: cubb.img);
-              }
-
-              await cubb.addMessage(
-                  chatId: widget.chatId,
-                  userId: userId,
-                  type: imageUrl.isNotEmpty,
-                  imagaeUrl: imageUrl,
-                  message: chatController.text);
-            }
-            chatController.clear();
-            cubb.img = null;
-            cubb.changeSendIcon('');
-          },
-        ),
+        state is UploadChatImageLoadingState
+            ? const CircularProgressIndicator()
+            : IconButton(
+                icon: const Icon(
+                  Icons.send_rounded,
+                  size: 32,
+                ),
+                onPressed: () async {
+                  if (chatController.text.isNotEmpty || cubb.img != null) {
+                    String imageUrl = "";
+                    if (cubb.img != null) {
+                      imageUrl = await cubb.uploadChatimage(file: cubb.img);
+                    }
+                    await cubb.addMessage(
+                        chatId: widget.chatId,
+                        userId: userId,
+                        type: imageUrl.isNotEmpty,
+                        imagaeUrl: imageUrl,
+                        message: chatController.text);
+                  }
+                  chatController.clear();
+                  cubb.img = null;
+                  cubb.changeSendIcon('');
+                },
+              ),
         IconButton(
           icon: const Icon(
             Icons.add_photo_alternate_rounded,
             size: 32.0,
           ),
-          onPressed: () {},
+          onPressed: () {
+            cubb.pickChatImage(ImageSource.gallery);
+          },
         ),
       ],
     );
@@ -276,19 +317,14 @@ class _ChatScreenState extends State<ChatScreen> {
                         horizontal: 8,
                         vertical: 8,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            message.message!,
-                          ),
-                          Text(
-                            formattedTime,
-                          ),
-                        ],
+                      child: Text(
+                        message.message!,
                       ),
                     ),
             ),
+            Text(
+              formattedTime,
+            )
           ],
         ),
       ),
@@ -347,18 +383,13 @@ class _ChatScreenState extends State<ChatScreen> {
                         horizontal: 8,
                         vertical: 8,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            message.message!,
-                          ),
-                          Text(
-                            formattedTime,
-                          ),
-                        ],
+                      child: Text(
+                        message.message!,
                       ),
                     ),
+            ),
+            Text(
+              formattedTime,
             ),
           ],
         ),

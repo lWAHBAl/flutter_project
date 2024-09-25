@@ -8,7 +8,7 @@ class PickImageState extends Appstates {}
 
 class ImageLoadingState extends Appstates {}
 
-class UploadChatImageState extends Appstates {}
+class UploadChatImageLoadingState extends Appstates {}
 
 class AddMessageSuccessState extends Appstates {}
 
@@ -35,3 +35,5 @@ class GetChatMessagesSuccessState extends Appstates {}
 class DeleteChatSuccessState extends Appstates {}
 
 class TempDeleteState extends Appstates {}
+
+class SwapState extends Appstates {}
